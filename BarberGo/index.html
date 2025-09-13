@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BarberGo · Barbería a domicilio</title>
+  <meta name="theme-color" content="#111827" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav container" aria-label="Principal">
+      <div class="logo" onclick="go('home')" role="button" aria-label="Ir a inicio">
+        <div class="logo-badge">BG</div>
+        <div>
+          <div>BarberGo</div>
+          <small class="pill">Barbería a domicilio</small>
+        </div>
+      </div>
+      <div class="nav-tabs" role="tablist">
+        <button class="tab active" data-tab="home" onclick="go('home')">Inicio</button>
+        <button class="tab" data-tab="services" onclick="go('services')">Servicios</button>
+        <button class="tab" data-tab="barbers" onclick="go('barbers')">Barberos</button>
+        <button class="tab" data-tab="store" onclick="go('store')">Tienda</button>
+        <button class="tab" data-tab="cart" onclick="go('cart')">Carrito</button>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" onclick="openAbout()">¿Cómo funciona?</button>
+        <button class="btn brand" onclick="go('services')">Reservar</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section id="home" class="active">
+      <div class="hero">
+        <div class="hero-card">
+          <h1>Tu corte perfecto, donde estés ✂️</h1>
+          <p class="mt-8">BarberGo lleva la barbería a tu casa. Reserva un barbero, elige servicios, agrega productos y paga todo en un solo lugar.</p>
+          <div class="hero-row mt-16">
+            <div class="search">
+              <input id="searchInput" class="input" placeholder="Busca servicios, barberos o productos" oninput="globalSearch(this.value)" />
+              <button class="btn" onclick="go('services')">Explorar</button>
+            </div>
+            <div class="row">
+              <span class="chip">Entrega a domicilio</span>
+              <span class="chip">Pagos en efectivo</span>
+              <span class="chip">100% responsive</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid cols-3" id="homeHighlights"></div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="services">
+      <h2 class="mb-0">Servicios populares</h2>
+      <p class="muted">Precios en COP. Opción de servicio a domicilio disponible en el carrito.</p>
+      <div class="grid cols-3 mt-16" id="servicesGrid"></div>
+    </section>
+
+    <!-- BARBEROS -->
+    <section id="barbers">
+      <div class="row">
+        <div>
+          <h2 class="mb-0">Barberos</h2>
+          <p class="muted">Elige tu barbero favorito y mira sus especialidades.</p>
+        </div>
+        <div id="selectedBarberBadge" class="chip hidden"></div>
+      </div>
+      <div class="grid cols-2 mt-16" id="barbersGrid"></div>
+    </section>
+
+    <!-- TIENDA -->
+    <section id="store">
+      <div class="row">
+        <div>
+          <h2 class="mb-0">Tienda</h2>
+          <p class="muted">Productos recomendados por nuestros barberos.</p>
+        </div>
+        <div class="search">
+          <input class="input" id="storeSearch" placeholder="Buscar en tienda..." oninput="renderStore(this.value)" />
+          <button class="btn" onclick="renderStore(''); document.getElementById('storeSearch').value=''">Limpiar</button>
+        </div>
+      </div>
+      <div class="grid cols-4 mt-16" id="storeGrid"></div>
+    </section>
+
+    <!-- CARRITO / CHECKOUT -->
+    <section id="cart">
+      <h2 class="mb-0">Tu carrito</h2>
+      <p class="muted">Revisa tus productos y servicios. El costo de domicilio solo aplica a servicios.</p>
+      <div class="grid cols-2 mt-16">
+        <div>
+          <div id="cartLines"></div>
+          <div class="center mt-16">
+            <button class="btn" onclick="clearCart()">Vaciar carrito</button>
+          </div>
+        </div>
+        <div>
+          <div class="total">
+            <div class="row"><span>Subtotal</span><span id="sumSubtotal">$0</span></div>
+            <div class="row"><span>Envío a domicilio</span><span id="sumDelivery">$0</span></div>
+            <div class="row"><span>Descuento</span><span id="sumDiscount">$0</span></div>
+            <hr style="border-color:var(--border);opacity:.4">
+            <div class="row" style="font-size:20px"><span>Total</span><span id="sumTotal">$0</span></div>
+            <div class="mt-12">
+              <label class="chip"><input type="checkbox" id="homeService" onchange="updateTotals()"> Servicio a domicilio (desde $8.000)</label>
+            </div>
+            <div class="mt-12"><input class="input" id="address" placeholder="Dirección (opcional si no es a domicilio)" /></div>
+            <button class="btn brand mt-12" onclick="checkout()">Confirmar pedido</button>
+            <small class="muted">Pagas al recibir. Te contactaremos por WhatsApp para confirmar la hora.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal elegir barbero -->
+  <div id="barberModal" class="modal" role="dialog" aria-modal="true" aria-label="Elegir barbero">
+    <div class="box">
+      <div class="row"><h3 style="margin:0">Elige un barbero</h3><button class="btn" onclick="closeModal('barberModal')">Cerrar</button></div>
+      <div id="barberModalList" class="mt-12"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Agregado al carrito</div>
+
+  <!-- Floating cart button -->
+  <button class="fab" title="Ir al carrito" onclick="go('cart')">🛒</button>
+
+  <script src="utils.js"></script>
+</body>
+</html>
